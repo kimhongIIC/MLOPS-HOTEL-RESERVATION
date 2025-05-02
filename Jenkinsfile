@@ -42,5 +42,27 @@ pipeline{
                 }
             }
         }
+
+        stage('deploy to google cloud run.....') {
+            steps {
+                // bind the JSON key file into $GOOGLE_APPLICATION_CREDENTIALS
+                withCredentials([file(credentialsId: 'gcp-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+                echo 'deploy to google cloud run.....'
+                sh '''
+                    export PATH=$PATH:${GCLOUD_PATH}
+                    gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
+                    gcloud config set project ${GCP_PROJECT}
+
+                    gcloud run deploy mlops-hotel-reservation \
+                        --image=gcr.io/${GCP_PROJECT}/mlops-hotel-reservation:latest \
+                        --platform=managed \
+                        --region=us-central1 \
+                        --allow-unauthenticated \
+                   
+                '''
+                }
+            }
+        }
+
     }
 }
