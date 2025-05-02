@@ -1,4 +1,3 @@
-
 import os, warnings, joblib, pandas as pd
 from flask import Flask, render_template, request
 from config.paths_config import MODEL_OUTPUT_PATH
@@ -16,7 +15,7 @@ loaded_model = joblib.load(MODEL_OUTPUT_PATH)
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
-        # collect and cast user inputs
+    
         vals = [
             int(request.form.get("lead_time", 0)),
             int(request.form.get("no_of_special_request", 0)),
