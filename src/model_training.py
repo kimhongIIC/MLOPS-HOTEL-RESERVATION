@@ -67,7 +67,7 @@ class ModelTraining:
                 scoring=self.random_search_params['scoring']
             )
             
-            random_search.fit(X_train, y_train)
+            random_search.fit(X_train, y_train, early_stopping_rounds=10)
             logger.info('Randomized Search completed.')
             
             best_params = random_search.best_params_
