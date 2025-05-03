@@ -1,181 +1,248 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hotel Reservation Prediction</title>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Reservation Cancellation Predictor</title>
   <style>
+    :root {
+      --primary-color: #2c3e50;
+      --accent-color: #18bc9c;
+      --danger-color: #c0392b;
+      --bg-light: #f5f7fa;
+      --bg-white: #ffffff;
+      --text-color: #34495e;
+      --border-radius: 8px;
+      --spacing: 24px;
+    }
+    * { box-sizing: border-box; }
     body {
-      font-family: Arial, sans-serif;
-      background: #f5f7fa;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
+      margin: 0;
+      background: var(--bg-light);
+      color: var(--text-color);
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      line-height: 1.5;
     }
     .container {
-      background: #ffffff;
-      padding: 24px 32px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      max-width: 520px;
-      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--spacing);
+      max-width: 960px;
+      margin: var(--spacing) auto;
+      padding: 0 20px;
     }
-    h1 {
-      text-align: center;
-      margin-bottom: 24px;
+    @media (min-width: 768px) { .container { grid-template-columns: 2fr 1fr; } }
+    .card {
+      background: var(--bg-white);
+      padding: var(--spacing);
+      border-radius: var(--border-radius);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
-    .form-group {
+    .form-wrapper {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--spacing);
+    }
+    @media (min-width: 600px) {
+      .form-wrapper { grid-template-columns: 1fr 2fr; }
+    }
+    h1, h2 {
+      margin-top: 0;
+      color: var(--primary-color);
+    }
+    .field-info {
+      border-left: 4px solid var(--primary-color);
+      padding-left: 12px;
+      background: #f9fafb;
+      border-radius: var(--border-radius);
+    }
+    .field-info h3 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+    .field-info ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+    .form-section .form-group {
       margin-bottom: 16px;
     }
-    label {
+    .form-section label {
       display: block;
       margin-bottom: 6px;
       font-weight: 600;
     }
-    input[type="number"],
-    select {
-      width: 100%;
-      padding: 8px 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      appearance: none;
-    }
-    button {
+    .form-section input,
+    .form-section select,
+    .form-section button {
       width: 100%;
       padding: 10px;
+      border: 1px solid #bdc3c7;
+      border-radius: var(--border-radius);
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    .form-section button {
+      margin-top: 8px;
       border: none;
-      border-radius: 8px;
-      background: #007bff;
+      background: var(--accent-color);
       color: #fff;
-      font-size: 16px;
       cursor: pointer;
+      transition: background 0.3s;
     }
-    button:hover {
-      background: #0069d9;
+    .form-section button:hover {
+      background: #15a589;
     }
-    .result {
-      margin-top: 24px;
-      padding: 16px;
-      border-radius: 8px;
+    .info-section ul {
+      padding-left: 20px;
+      margin: 0;
+    }
+    .result-card {
+      margin-top: var(--spacing);
+      padding: var(--spacing);
+      font-size: 18px;
+      font-weight: 600;
       text-align: center;
+      border-left: 6px solid;
+      border-radius: var(--border-radius);
+      background: var(--bg-white);
     }
-    .cancel {
+    .result-card.cancel {
+      border-color: var(--danger-color);
+      color: var(--danger-color);
       background: #ffecec;
-      color: #d60000;
     }
-    .not-cancel {
+    .result-card.not-cancel {
+      border-color: var(--accent-color);
+      color: var(--accent-color);
       background: #e6ffed;
-      color: #007b1e;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Hotel Reservation Prediction</h1>
-    <form action="/" method="POST">
-      <div class="form-group">
-        <label for="lead_time">Lead Time (days)</label>
-        <input type="number" min="0" name="lead_time" id="lead_time" placeholder="e.g. 120" required />
+    <!-- Left: Input and Definitions -->
+    <div class="card">
+      <h1>Reservation Cancellation Predictor</h1>
+      <p>Provide booking details to assess cancellation risk.</p>
+      <div class="form-wrapper">
+        <!-- Definitions Sidebar -->
+        <aside class="field-info">
+          <h3>Input Definitions</h3>
+          <ul>
+            <li><strong>Lead Time:</strong> Days between booking and expected arrival.</li>
+            <li><strong>Special Requests:</strong> Extra requests like crib or late check-in.</li>
+            <li><strong>Avg Price:</strong> Average nightly room rate in USD.</li>
+            <li><strong>Arrival Date:</strong> Scheduled month and day of check-in.</li>
+            <li><strong>Market Segment:</strong> Booking channel (e.g., Corporate, OTA).</li>
+            <li><strong>Week Nights:</strong> Number of Monday–Friday nights.</li>
+            <li><strong>Weekend Nights:</strong> Number of Saturday–Sunday nights.</li>
+            <li><strong>Meal Plan:</strong> Type of meals included with stay.</li>
+            <li><strong>Room Type:</strong> Category of room reserved.</li>
+          </ul>
+        </aside>
+        <!-- Form Section -->
+        <section class="form-section">
+          <form action="/" method="POST">
+            <div class="form-group">
+              <label for="lead_time">Lead Time (days)</label>
+              <input type="number" name="lead_time" id="lead_time" min="0" placeholder="e.g. 120" required />
+            </div>
+            <div class="form-group">
+              <label for="no_of_special_request">Special Requests</label>
+              <input type="number" name="no_of_special_request" id="no_of_special_request" min="0" placeholder="e.g. 1" required />
+            </div>
+            <div class="form-group">
+              <label for="avg_price_per_room">Avg Price per Room (USD)</label>
+              <input type="number" step="0.01" name="avg_price_per_room" id="avg_price_per_room" min="0" placeholder="e.g. 120.50" required />
+            </div>
+            <div class="form-group">
+              <label for="arrival_month">Arrival Month</label>
+              <select name="arrival_month" id="arrival_month" required>
+                <option value="" disabled selected>Select month</option>
+                {% for m,name in [(1,'Jan'),(2,'Feb'),(3,'Mar'),(4,'Apr'),(5,'May'),(6,'Jun'),(7,'Jul'),(8,'Aug'),(9,'Sep'),(10,'Oct'),(11,'Nov'),(12,'Dec')] %}
+                  <option value="{{m}}">{{name}}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="arrival_date">Arrival Day</label>
+              <select name="arrival_date" id="arrival_date" required>
+                <option value="" disabled selected>Select day</option>
+                {% for d in range(1,32) %}<option value="{{d}}">{{d}}</option>{% endfor %}
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="market_segment_type">Market Segment</label>
+              <select name="market_segment_type" id="market_segment_type" required>
+                <option value="" disabled selected>Select segment</option>
+                <option value="1">Corporate</option>
+                <option value="2">Direct</option>
+                <option value="3">Online Travel Agency</option>
+                <option value="4">Offline Travel Agency</option>
+                <option value="5">Complementary</option>
+                <option value="6">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="no_of_week_nights">Week Nights</label>
+              <input type="number" name="no_of_week_nights" id="no_of_week_nights" min="0" placeholder="e.g. 3" required />
+            </div>
+            <div class="form-group">
+              <label for="no_of_weekend_nights">Weekend Nights</label>
+              <input type="number" name="no_of_weekend_nights" id="no_of_weekend_nights" min="0" placeholder="e.g. 2" required />
+            </div>
+            <div class="form-group">
+              <label for="type_of_meal_plan">Meal Plan</label>
+              <select name="type_of_meal_plan" id="type_of_meal_plan" required>
+                <option value="" disabled selected>Select plan</option>
+                <option value="0">No Meal Plan</option>
+                <option value="1">Breakfast Only</option>
+                <option value="2">Half Board</option>
+                <option value="3">Full Board</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="room_type_reserved">Room Type</label>
+              <select name="room_type_reserved" id="room_type_reserved" required>
+                <option value="" disabled selected>Select type</option>
+                <option value="0">Standard</option>
+                <option value="1">Superior</option>
+                <option value="2">Deluxe</option>
+                <option value="3">Suite</option>
+                <option value="4">Presidential</option>
+              </select>
+            </div>
+            <button type="submit">Predict Cancellation Risk</button>
+          </form>
+        </section>
       </div>
+    </div>
 
-      <div class="form-group">
-        <label for="no_of_special_request">Number of Special Requests</label>
-        <input type="number" min="0" name="no_of_special_request" id="no_of_special_request" placeholder="e.g. 1" required />
+    <!-- Right: Info and Result -->
+    <div>
+      <div class="card info-section">
+        <h2>How It Works</h2>
+        <ul>
+          <li><strong>Model:</strong> Logistic Regression trained on past reservations.</li>
+          <li><strong>Key Inputs:</strong> Advance notice, stay length, pricing channel.</li>
+          <li><strong>Output:</strong> Risk score (probability) of cancellation.</li>
+          <li><strong>Performance:</strong> 82% accuracy, AUC 0.87.</li>
+          <li><strong>Use:</strong> Focus support on high-risk bookings.</li>
+        </ul>
       </div>
-
-      <div class="form-group">
-        <label for="avg_price_per_room">Average Price per Room (USD)</label>
-        <input type="number" step="0.01" min="0" name="avg_price_per_room" id="avg_price_per_room" placeholder="e.g. 120.50" required />
-      </div>
-
-      <div class="form-group">
-        <label for="arrival_month">Arrival Month</label>
-        <select name="arrival_month" id="arrival_month" required>
-          <option value="" disabled selected>Select month</option>
-          <option value="1">January</option>
-          <option value="2">February</option>
-          <option value="3">March</option>
-          <option value="4">April</option>
-          <option value="5">May</option>
-          <option value="6">June</option>
-          <option value="7">July</option>
-          <option value="8">August</option>
-          <option value="9">September</option>
-          <option value="10">October</option>
-          <option value="11">November</option>
-          <option value="12">December</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="arrival_date">Arrival Day of Month</label>
-        <select name="arrival_date" id="arrival_date" required>
-          <option value="" disabled selected>Select day</option>
-          {% for d in range(1, 32) %}
-            <option value="{{ d }}">{{ d }}</option>
-          {% endfor %}
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="market_segment_type">Market Segment Type</label>
-        <select name="market_segment_type" id="market_segment_type" required>
-          <option value="" disabled selected>Select segment</option>
-          <option value="1">Aviation</option>
-          <option value="2">Corporate</option>
-          <option value="3">Online Travel Agency</option>
-          <option value="4">Offline Travel Agency</option>
-          <option value="5">Complementary</option>
-          <option value="6">Other</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="no_of_week_nights">Number of Week Nights</label>
-        <input type="number" min="0" name="no_of_week_nights" id="no_of_week_nights" placeholder="e.g. 3" required />
-      </div>
-
-      <div class="form-group">
-        <label for="no_of_weekend_nights">Number of Weekend Nights</label>
-        <input type="number" min="0" name="no_of_weekend_nights" id="no_of_weekend_nights" placeholder="e.g. 2" required />
-      </div>
-
-      <div class="form-group">
-        <label for="type_of_meal_plan">Meal Plan</label>
-        <select name="type_of_meal_plan" id="type_of_meal_plan" required>
-          <option value="" disabled selected>Select meal plan</option>
-          <option value="0">No Plan</option>
-          <option value="1">Meal Plan 1</option>
-          <option value="2">Meal Plan 2</option>
-          <option value="3">Meal Plan 3</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="room_type_reserved">Room Type Reserved</label>
-        <select name="room_type_reserved" id="room_type_reserved" required>
-          <option value="" disabled selected>Select room type</option>
-          <option value="0">Room Type 0</option>
-          <option value="1">Room Type 1</option>
-          <option value="2">Room Type 2</option>
-          <option value="3">Room Type 3</option>
-          <option value="4">Room Type 4</option>
-          <option value="5">Room Type 5</option>
-        </select>
-      </div>
-
-      <button type="submit">Predict</button>
-    </form>
-
-    {% if probability is defined %}
-      <div class="result {{ 'cancel' if prediction == 0 else 'not-cancel' }}">
-        {% if prediction == 0 %}
-          <p>The customer is <strong>likely to cancel</strong> (<em>{{ ((1 - probability) * 100) | round(2) }}%</em> confidence).</p>
-        {% else %}
-          <p>The customer is <strong>likely to keep</strong> the reservation (<em>{{ (probability * 100) | round(2) }}%</em> confidence).</p>
-        {% endif %}
-      </div>
-    {% endif %}
-
-    
+      {% if probability is defined %}
+        <div class="result-card {{ 'cancel' if prediction == 0 else 'not-cancel' }}">
+          {% if prediction == 0 %}
+            <span>Likely to <strong>cancel</strong> reservation</span><br>
+            <em>{{ ((1 - probability) * 100)|round(2) }}% confidence</em>
+          {% else %}
+            <span>Likely to <strong>keep</strong> reservation</span><br>
+            <em>{{ (probability * 100)|round(2) }}% confidence</em>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</body>
+</html>
