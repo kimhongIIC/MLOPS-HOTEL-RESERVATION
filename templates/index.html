@@ -6,242 +6,629 @@
   <title>Reservation Cancellation Predictor</title>
   <style>
     :root {
-      --primary-color: #2c3e50;
-      --accent-color: #18bc9c;
-      --danger-color: #c0392b;
-      --bg-light: #f5f7fa;
+      --primary-color: #2563eb;
+      --primary-hover: #1d4ed8;
+      --accent-color: #0ea5e9;
+      --danger-color: #ef4444;
+      --success-color: #10b981;
+      --neutral-color: #64748b;
+      --bg-light: #f8fafc;
       --bg-white: #ffffff;
-      --text-color: #34495e;
+      --bg-card: #ffffff;
+      --text-color: #1e293b;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
       --border-radius: 8px;
-      --spacing: 24px;
+      --box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+      --spacing-xs: 8px;
+      --spacing-sm: 12px;
+      --spacing-md: 16px;
+      --spacing-lg: 24px;
+      --spacing-xl: 32px;
     }
-    * { box-sizing: border-box; }
-    body {
+    
+    * { 
+      box-sizing: border-box;
       margin: 0;
+      padding: 0;
+    }
+    
+    body {
       background: var(--bg-light);
       color: var(--text-color);
-      font-family: 'Segoe UI', Tahoma, sans-serif;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
       line-height: 1.5;
+      padding: var(--spacing-lg);
     }
+    
     .container {
       display: grid;
       grid-template-columns: 1fr;
-      gap: var(--spacing);
-      max-width: 960px;
-      margin: var(--spacing) auto;
-      padding: 0 20px;
+      gap: var(--spacing-lg);
+      max-width: 1200px;
+      margin: 0 auto;
     }
-    @media (min-width: 768px) { .container { grid-template-columns: 2fr 1fr; } }
+    
+    .page-header {
+      text-align: center;
+      margin-bottom: var(--spacing-lg);
+    }
+    
+    .page-header h1 {
+      color: var(--primary-color);
+      font-size: 2.25rem;
+      margin-bottom: var(--spacing-xs);
+    }
+    
+    .page-header p {
+      color: var(--text-muted);
+      font-size: 1.125rem;
+    }
+    
+    .header-divider {
+      height: 4px;
+      width: 80px;
+      background: var(--primary-color);
+      margin: var(--spacing-md) auto;
+      border-radius: 2px;
+    }
+    
+    @media (min-width: 900px) {
+      .container {
+        grid-template-columns: 3fr 2fr;
+      }
+    }
+    
     .card {
-      background: var(--bg-white);
-      padding: var(--spacing);
+      background: var(--bg-card);
       border-radius: var(--border-radius);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      box-shadow: var(--box-shadow);
+      overflow: hidden;
     }
+    
+    .card-header {
+      background: var(--primary-color);
+      color: white;
+      padding: var(--spacing-md) var(--spacing-lg);
+    }
+    
+    .card-header h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+    
+    .card-body {
+      padding: var(--spacing-lg);
+    }
+    
     .form-wrapper {
       display: grid;
       grid-template-columns: 1fr;
-      gap: var(--spacing);
+      gap: var(--spacing-lg);
     }
-    @media (min-width: 600px) {
-      .form-wrapper { grid-template-columns: 1fr 2fr; }
+    
+    @media (min-width: 768px) {
+      .form-wrapper {
+        grid-template-columns: 1fr 3fr;
+      }
     }
-    h1, h2 {
-      margin-top: 0;
+    
+    /* Collapsible field info styles */
+    .field-info-container {
+      background: #f0f7ff;
+      border-radius: var(--border-radius);
+      border-left: 4px solid var(--primary-color);
+      overflow: hidden;
+    }
+    
+    .field-info-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--spacing-md);
+      background: rgba(37, 99, 235, 0.1);
+      cursor: pointer;
+    }
+    
+    .field-info-header h3 {
+      margin: 0;
+      color: var(--primary-color);
+      font-size: 1.125rem;
+    }
+    
+    .toggle-btn {
+      background: none;
+      border: none;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary-color);
+      font-weight: bold;
+      font-size: 18px;
+      transition: var(--transition);
+      background-color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .toggle-btn:hover {
+      background-color: rgba(255, 255, 255, 0.9);
+    }
+    
+    .field-info {
+      padding: var(--spacing-md);
+    }
+    
+    .field-info ul {
+      list-style-type: none;
+    }
+    
+    .field-info li {
+      margin-bottom: var(--spacing-xs);
+      font-size: 0.9rem;
+      position: relative;
+      padding-left: var(--spacing-md);
+    }
+    
+    .field-info li:before {
+      content: '•';
+      color: var(--primary-color);
+      position: absolute;
+      left: 0;
+    }
+    
+    .field-info li strong {
       color: var(--primary-color);
     }
-    .field-info {
-      border-left: 4px solid var(--primary-color);
-      padding-left: 12px;
-      background: #f9fafb;
-      border-radius: var(--border-radius);
+    
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--spacing-md);
     }
-    .field-info h3 {
-      margin: 0 0 8px;
-      font-size: 16px;
+    
+    @media (min-width: 640px) {
+      .form-grid {
+        grid-template-columns: 1fr 1fr;
+      }
     }
-    .field-info ul {
-      margin: 0;
-      padding-left: 20px;
+    
+    .form-group {
+      margin-bottom: var(--spacing-md);
     }
-    .form-section .form-group {
-      margin-bottom: 16px;
-    }
-    .form-section label {
+    
+    .form-group label {
       display: block;
-      margin-bottom: 6px;
-      font-weight: 600;
+      margin-bottom: var(--spacing-xs);
+      font-weight: 500;
+      color: var(--text-color);
+      font-size: 0.9rem;
     }
-    .form-section input,
-    .form-section select,
-    .form-section button {
+    
+    /* Improved form control styles */
+    .form-control {
       width: 100%;
-      padding: 10px;
-      border: 1px solid #bdc3c7;
+      padding: 12px 16px;
+      border: 1px solid var(--border-color);
       border-radius: var(--border-radius);
-      font-size: 14px;
-      box-sizing: border-box;
+      font-size: 1rem;
+      transition: var(--transition);
+      background-color: #f9fafc;
     }
-    .form-section button {
-      margin-top: 8px;
-      border: none;
-      background: var(--accent-color);
-      color: #fff;
-      cursor: pointer;
-      transition: background 0.3s;
+    
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      background-color: white;
     }
-    .form-section button:hover {
-      background: #15a589;
+    
+    .form-control::placeholder {
+      color: #a1a1aa;
     }
-    .info-section ul {
-      padding-left: 20px;
-      margin: 0;
-    }
-    .result-card {
-      margin-top: var(--spacing);
-      padding: var(--spacing);
-      font-size: 18px;
+    
+    /* Focus visual indicator */
+    .form-group.focused label {
+      color: var(--primary-color);
       font-weight: 600;
-      text-align: center;
-      border-left: 6px solid;
-      border-radius: var(--border-radius);
-      background: var(--bg-white);
     }
+    
+    .btn {
+      display: inline-block;
+      font-weight: 500;
+      text-align: center;
+      white-space: nowrap;
+      vertical-align: middle;
+      user-select: none;
+      border: 1px solid transparent;
+      padding: 0.675rem 1.5rem;
+      font-size: 1rem;
+      line-height: 1.5;
+      border-radius: var(--border-radius);
+      transition: var(--transition);
+      cursor: pointer;
+    }
+    
+    .btn-primary {
+      color: #fff;
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+      border-color: var(--primary-hover);
+    }
+    
+    .btn-lg {
+      padding: 0.75rem 2rem;
+      font-size: 1.125rem;
+    }
+    
+    .btn-block {
+      display: block;
+      width: 100%;
+    }
+    
+    .info-section h3 {
+      font-size: 1.25rem;
+      margin-bottom: var(--spacing-md);
+      color: var(--primary-color);
+    }
+    
+    .info-list {
+      list-style-type: none;
+      margin-bottom: var(--spacing-lg);
+    }
+    
+    .info-list li {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: var(--spacing-sm);
+      font-size: 0.95rem;
+    }
+    
+    .info-list li:before {
+      content: '•';
+      color: var(--primary-color);
+      margin-right: var(--spacing-xs);
+      font-weight: bold;
+    }
+    
+    .info-list li strong {
+      margin-right: 5px;
+    }
+    
+    .result-card {
+      margin-top: var(--spacing-lg);
+      padding: var(--spacing-lg);
+      border-radius: var(--border-radius);
+      text-align: center;
+      font-size: 1.125rem;
+      border-left: 6px solid;
+      animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
     .result-card.cancel {
       border-color: var(--danger-color);
+      background: #fff5f5;
       color: var(--danger-color);
-      background: #ffecec;
     }
+    
     .result-card.not-cancel {
-      border-color: var(--accent-color);
-      color: var(--accent-color);
-      background: #e6ffed;
+      border-color: var(--success-color);
+      background: #f0fdf4;
+      color: var(--success-color);
+    }
+    
+    .result-card strong {
+      font-size: 1.25rem;
+      display: block;
+      margin-bottom: var(--spacing-xs);
+    }
+    
+    .result-card em {
+      font-style: normal;
+      font-size: 0.95rem;
+      opacity: 0.9;
+    }
+    
+    .form-section-title {
+      font-size: 1rem;
+      color: var(--primary-color);
+      margin: var(--spacing-lg) 0 var(--spacing-sm) 0;
+      padding-bottom: var(--spacing-xs);
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .hint-text {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    
+    .tooltip {
+      position: relative;
+      display: inline-block;
+    }
+    
+    .tooltip .tooltip-text {
+      visibility: hidden;
+      width: 200px;
+      background-color: #333;
+      color: #fff;
+      text-align: left;
+      border-radius: 6px;
+      padding: 10px;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: opacity 0.3s;
+      font-size: 0.8rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+    
+    .tooltip:hover .tooltip-text {
+      visibility: visible;
+      opacity: 1;
     }
   </style>
+  
+  <script>
+    // Toggle definitions panel
+    function toggleDefinitions() {
+      const panel = document.getElementById('definitionsPanel');
+      const toggleIcon = document.querySelector('.toggle-icon');
+      
+      if (panel.style.display === 'none') {
+        panel.style.display = 'block';
+        toggleIcon.textContent = '−';
+      } else {
+        panel.style.display = 'none';
+        toggleIcon.textContent = '+';
+      }
+    }
+    
+    // Add focus indicators to form fields
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize the definitions panel (collapsed by default)
+      const panel = document.getElementById('definitionsPanel');
+      const toggleIcon = document.querySelector('.toggle-icon');
+      panel.style.display = 'none';
+      toggleIcon.textContent = '+';
+      
+      // Add focus indicators to form controls
+      const formControls = document.querySelectorAll('.form-control');
+      
+      formControls.forEach(control => {
+        control.addEventListener('focus', function() {
+          this.closest('.form-group').classList.add('focused');
+        });
+        
+        control.addEventListener('blur', function() {
+          this.closest('.form-group').classList.remove('focused');
+        });
+      });
+    });
+  </script>
 </head>
 <body>
+  <div class="page-header">
+    <h1>Reservation Cancellation Predictor</h1>
+    <div class="header-divider"></div>
+    <p>Analyze booking details to assess cancellation risk and take proactive measures</p>
+  </div>
+  
   <div class="container">
-    <!-- Left: Input and Definitions -->
+    <!-- Left: Input Form -->
     <div class="card">
-      <h1>Reservation Cancellation Predictor</h1>
-      <p>Provide booking details to assess cancellation risk.</p>
-      <div class="form-wrapper">
-        <!-- Definitions Sidebar -->
-        <aside class="field-info">
-          <h3>Input Definitions</h3>
-          <ul>
-            <li><strong>Lead Time:</strong> Days between booking and expected arrival.</li>
-            <li><strong>Special Requests:</strong> Extra requests like crib or late check-in.</li>
-            <li><strong>Avg Price:</strong> Average nightly room rate in USD.</li>
-            <li><strong>Arrival Date:</strong> Scheduled month and day of check-in.</li>
-            <li><strong>Market Segment:</strong> Booking channel (e.g., Corporate, OTA).</li>
-            <li><strong>Week Nights:</strong> Number of Monday–Friday nights.</li>
-            <li><strong>Weekend Nights:</strong> Number of Saturday–Sunday nights.</li>
-            <li><strong>Meal Plan:</strong> Type of meals included with stay.</li>
-            <li><strong>Room Type:</strong> Category of room reserved.</li>
-          </ul>
-        </aside>
-        <!-- Form Section -->
-        <section class="form-section">
-          <form action="/" method="POST">
-            <div class="form-group">
-              <label for="lead_time">Lead Time (days)</label>
-              <input type="number" name="lead_time" id="lead_time" min="0" placeholder="e.g. 120" required />
+      <div class="card-header">
+        <h2>Booking Details</h2>
+      </div>
+      <div class="card-body">
+        <div class="form-wrapper">
+          <aside class="field-info-container">
+            <div class="field-info-header" onclick="toggleDefinitions()">
+              <h3>Input Definitions</h3>
+              <button type="button" class="toggle-btn">
+                <span class="toggle-icon">−</span>
+              </button>
             </div>
-            <div class="form-group">
-              <label for="no_of_special_request">Special Requests</label>
-              <input type="number" name="no_of_special_request" id="no_of_special_request" min="0" placeholder="e.g. 1" required />
+            <div class="field-info" id="definitionsPanel">
+              <ul>
+                <li><strong>Lead Time:</strong> Days between booking and expected arrival.</li>
+                <li><strong>Special Requests:</strong> Extra requests like crib or late check-in.</li>
+                <li><strong>Avg Price:</strong> Average nightly room rate in USD.</li>
+                <li><strong>Arrival Date:</strong> Scheduled month and day of check-in.</li>
+                <li><strong>Market Segment:</strong> Booking channel (e.g., Corporate, OTA).</li>
+                <li><strong>Week Nights:</strong> Number of Monday–Friday nights.</li>
+                <li><strong>Weekend Nights:</strong> Number of Saturday–Sunday nights.</li>
+                <li><strong>Meal Plan:</strong> Type of meals included with stay.</li>
+                <li><strong>Room Type:</strong> Category of room reserved.</li>
+              </ul>
             </div>
-            <div class="form-group">
-              <label for="avg_price_per_room">Avg Price per Room (USD)</label>
-              <input type="number" step="0.01" name="avg_price_per_room" id="avg_price_per_room" min="0" placeholder="e.g. 120.50" required />
-            </div>
-            <div class="form-group">
-              <label for="arrival_month">Arrival Month</label>
-              <select name="arrival_month" id="arrival_month" required>
-                <option value="" disabled selected>Select month</option>
-                {% for m,name in [(1,'Jan'),(2,'Feb'),(3,'Mar'),(4,'Apr'),(5,'May'),(6,'Jun'),(7,'Jul'),(8,'Aug'),(9,'Sep'),(10,'Oct'),(11,'Nov'),(12,'Dec')] %}
-                  <option value="{{m}}">{{name}}</option>
-                {% endfor %}
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="arrival_date">Arrival Day</label>
-              <select name="arrival_date" id="arrival_date" required>
-                <option value="" disabled selected>Select day</option>
-                {% for d in range(1,32) %}<option value="{{d}}">{{d}}</option>{% endfor %}
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="market_segment_type">Market Segment</label>
-              <select name="market_segment_type" id="market_segment_type" required>
-                <option value="" disabled selected>Select segment</option>
-                <option value="1">Corporate</option>
-                <option value="2">Direct</option>
-                <option value="3">Online Travel Agency</option>
-                <option value="4">Offline Travel Agency</option>
-                <option value="5">Complementary</option>
-                <option value="6">Other</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="no_of_week_nights">Week Nights</label>
-              <input type="number" name="no_of_week_nights" id="no_of_week_nights" min="0" placeholder="e.g. 3" required />
-            </div>
-            <div class="form-group">
-              <label for="no_of_weekend_nights">Weekend Nights</label>
-              <input type="number" name="no_of_weekend_nights" id="no_of_weekend_nights" min="0" placeholder="e.g. 2" required />
-            </div>
-            <div class="form-group">
-              <label for="type_of_meal_plan">Meal Plan</label>
-              <select name="type_of_meal_plan" id="type_of_meal_plan" required>
-                <option value="" disabled selected>Select plan</option>
-                <option value="0">No Meal Plan</option>
-                <option value="1">Breakfast Only</option>
-                <option value="2">Half Board</option>
-                <option value="3">Full Board</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="room_type_reserved">Room Type</label>
-              <select name="room_type_reserved" id="room_type_reserved" required>
-                <option value="" disabled selected>Select type</option>
-                <option value="0">Standard</option>
-                <option value="1">Superior</option>
-                <option value="2">Deluxe</option>
-                <option value="3">Suite</option>
-                <option value="4">Presidential</option>
-              </select>
-            </div>
-            <button type="submit">Predict Cancellation Risk</button>
-          </form>
-        </section>
+          </aside>
+          <section>
+            <form action="/" method="POST">
+              <h3 class="form-section-title">Booking Information</h3>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="lead_time">
+                    Lead Time (days) 
+                    <div class="tooltip">
+                      <span class="icon-info">i</span>
+                      <span class="tooltip-text">Number of days between booking date and arrival date</span>
+                    </div>
+                  </label>
+                  <input type="number" class="form-control" name="lead_time" id="lead_time" min="0" placeholder="e.g. 120" required />
+                  <div class="hint-text">Higher lead times may indicate higher cancellation risk</div>
+                </div>
+                <div class="form-group">
+                  <label for="market_segment_type">Market Segment</label>
+                  <select class="form-control" name="market_segment_type" id="market_segment_type" required>
+                    <option value="" disabled selected>Select segment</option>
+                    <option value="1">Corporate</option>
+                    <option value="2">Direct</option>
+                    <option value="3">Online Travel Agency</option>
+                    <option value="4">Offline Travel Agency</option>
+                    <option value="5">Complementary</option>
+                    <option value="6">Other</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="arrival_month">Arrival Month</label>
+                  <select class="form-control" name="arrival_month" id="arrival_month" required>
+                    <option value="" disabled selected>Select month</option>
+                    <option value="1">January</option>
+                    <option value="2">February</option>
+                    <option value="3">March</option>
+                    <option value="4">April</option>
+                    <option value="5">May</option>
+                    <option value="6">June</option>
+                    <option value="7">July</option>
+                    <option value="8">August</option>
+                    <option value="9">September</option>
+                    <option value="10">October</option>
+                    <option value="11">November</option>
+                    <option value="12">December</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="arrival_date">Arrival Day</label>
+                  <select class="form-control" name="arrival_date" id="arrival_date" required>
+                    <option value="" disabled selected>Select day</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                    <option value="13">13</option>
+                    <option value="14">14</option>
+                    <option value="15">15</option>
+                    <option value="16">16</option>
+                    <option value="17">17</option>
+                    <option value="18">18</option>
+                    <option value="19">19</option>
+                    <option value="20">20</option>
+                    <option value="21">21</option>
+                    <option value="22">22</option>
+                    <option value="23">23</option>
+                    <option value="24">24</option>
+                    <option value="25">25</option>
+                    <option value="26">26</option>
+                    <option value="27">27</option>
+                    <option value="28">28</option>
+                    <option value="29">29</option>
+                    <option value="30">30</option>
+                    <option value="31">31</option>
+                  </select>
+                </div>
+              </div>
+              
+              <h3 class="form-section-title">Stay Details</h3>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="no_of_week_nights">Week Nights</label>
+                  <input type="number" class="form-control" name="no_of_week_nights" id="no_of_week_nights" min="0" placeholder="e.g. 3" required />
+                </div>
+                <div class="form-group">
+                  <label for="no_of_weekend_nights">Weekend Nights</label>
+                  <input type="number" class="form-control" name="no_of_weekend_nights" id="no_of_weekend_nights" min="0" placeholder="e.g. 2" required />
+                </div>
+              </div>
+              
+              <h3 class="form-section-title">Room & Services</h3>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="room_type_reserved">Room Type</label>
+                  <select class="form-control" name="room_type_reserved" id="room_type_reserved" required>
+                    <option value="" disabled selected>Select type</option>
+                    <option value="0">Standard</option>
+                    <option value="1">Superior</option>
+                    <option value="2">Deluxe</option>
+                    <option value="3">Suite</option>
+                    <option value="4">Presidential</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="type_of_meal_plan">Meal Plan</label>
+                  <select class="form-control" name="type_of_meal_plan" id="type_of_meal_plan" required>
+                    <option value="" disabled selected>Select plan</option>
+                    <option value="0">No Meal Plan</option>
+                    <option value="1">Breakfast Only</option>
+                    <option value="2">Half Board</option>
+                    <option value="3">Full Board</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="avg_price_per_room">Avg Price per Room (USD)</label>
+                  <input type="number" step="0.01" class="form-control" name="avg_price_per_room" id="avg_price_per_room" min="0" placeholder="e.g. 120.50" required />
+                </div>
+                <div class="form-group">
+                  <label for="no_of_special_request">Special Requests</label>
+                  <input type="number" class="form-control" name="no_of_special_request" id="no_of_special_request" min="0" placeholder="e.g. 1" required />
+                  <div class="hint-text">Number of additional services requested</div>
+                </div>
+              </div>
+              
+              <button type="submit" class="btn btn-primary btn-lg btn-block">Predict Cancellation Risk</button>
+            </form>
+          </section>
+        </div>
       </div>
     </div>
-
+    
     <!-- Right: Info and Result -->
-    <div>
-      <div class="card info-section">
+    <div class="card">
+      <div class="card-header">
         <h2>How It Works</h2>
-        <ul>
+      </div>
+      <div class="card-body info-section">
+        <h3>Prediction Model</h3>
+        <ul class="info-list">
           <li><strong>Model:</strong> Logistic Regression trained on past reservations.</li>
           <li><strong>Key Inputs:</strong> Advance notice, stay length, pricing channel.</li>
           <li><strong>Output:</strong> Risk score (probability) of cancellation.</li>
-          <li><strong>Performance:</strong> 82% accuracy, AUC 0.87.</li>
           <li><strong>Use:</strong> Focus support on high-risk bookings.</li>
         </ul>
-      </div>
-      {% if probability is defined %}
+        
+        {% if probability is defined %}
         <div class="result-card {{ 'cancel' if prediction == 0 else 'not-cancel' }}">
           {% if prediction == 0 %}
-            <span>Likely to <strong>cancel</strong> reservation</span><br>
+            <strong>Likely to cancel reservation</strong>
             <em>{{ ((1 - probability) * 100)|round(2) }}% confidence</em>
           {% else %}
-            <span>Likely to <strong>keep</strong> reservation</span><br>
+            <strong>Likely to keep reservation</strong>
             <em>{{ (probability * 100)|round(2) }}% confidence</em>
           {% endif %}
         </div>
-      {% endif %}
+        {% endif %}
+        
+      </div>
     </div>
   </div>
 </body>
