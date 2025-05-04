@@ -50,9 +50,8 @@
     <div class="header-divider"></div>
     <p>Visualize how feature inputs (e.g., lead time, requests, price) map to cancellation probability.</p>
   </div>
-  <a href="{{ url_for('index') }}" class="btn-light">&larr; Back</a>
+  <a href="javascript:history.back()" class="btn-light">&larr; Back</a>
   <div class="container">
-    <!-- 1. What Is Logistic Regression? -->
     <div class="card">
       <div class="card-header"><h2>1. What Is Logistic Regression?</h2></div>
       <div class="card-body">
@@ -66,41 +65,38 @@
       </div>
     </div>
 
-    <!-- 2. Key Terms -->
     <div class="card">
       <div class="card-header"><h2>Key Terms</h2></div>
       <div class="card-body">
         <table>
           <tr><th>Term</th><th>Meaning</th></tr>
-          <tr><td>Weight (w)</td><td>How much a feature contirbute to the score</td></tr>
+          <tr><td>Weight (w)</td><td>How much a feature contributes to the score. You can think of it like a slider — increasing the weight increases the feature's influence on the outcome, while decreasing it reduces its impact.</td></tr>
           <tr><td>Bias (b)</td><td>The baseline score before any features are added.</td></tr>
-          <tr><td>Raw score (z)</td><td>	The baseline plus all feature contributions.</td></tr>
-          <tr><td>Probability σ(z)</td><td>	That score converted into a percentage chance (0 – 100 %).</td></tr>
+          <tr><td>Raw score (z)</td><td>The baseline plus all feature contributions.</td></tr>
+          <tr><td>Probability σ(z)</td><td>That score converted into a percentage chance (0–100%).</td></tr>
           <tr><td>e</td><td>≈2.718</td></tr>
         </table>
       </div>
     </div>
 
-    <!-- 3. Sigmoid Curve & Formula -->
     <div class="card">
       <div class="card-header"><h2>Sigmoid Curve & Formula</h2></div>
       <div class="card-body">
-        <p>The sigmoid function converts the raw score <strong>z</strong> into a probability.</p>
+        <p>The sigmoid function transforms the raw score (z) into a probability between 0 and 1.</p>
         <p style="text-align:center; font-size:1.1rem;"><strong>σ(z) = 1 / (1 + e<sup>−z</sup>)</strong></p>
         <div style="margin: var(--spacing-md) 0;">
-  <div style="text-align: left; font-size:0.9rem; color:var(--text-color); margin-bottom:4px;">σ(z) (output probability)</div>
-  <img src="https://upload.wikimedia.org/wikipedia/commons/8/88/Logistic-curve.svg" alt="Sigmoid curve" style="max-width:100%; height:auto; display:block; margin: 0 auto;" />
-  <div style="text-align: right; font-size:0.9rem; color:var(--text-color); margin-top:4px;">z (input raw score)</div>
-</div>
-<ul style="font-size:0.95rem; margin-top:8px;">
-          <li>When <strong>z = 0</strong> (middle line), probability = 50%</li>
-          <li>For <strong>z &gt; 0</strong> (right), σ(z) &gt; 50%</li>
-          <li>For <strong>z &lt; 0</strong> (left), σ(z) &lt; 50%</li>
+          <div style="text-align: left; font-size:0.9rem; color:var(--text-color); margin-bottom:4px;">σ(z) (output probability)</div>
+          <img src="https://upload.wikimedia.org/wikipedia/commons/8/88/Logistic-curve.svg" alt="Sigmoid curve" style="max-width:100%; height:auto; display:block; margin: 0 auto;" />
+          <div style="text-align: right; font-size:0.9rem; color:var(--text-color); margin-top:4px;">z (input raw score)</div>
+        </div>
+        <ul style="font-size:0.95rem; margin-top:8px;">
+          <li>When <strong>z = 0</strong>, probability = 50%</li>
+          <li>For <strong>z > 0</strong>, σ(z) > 50%</li>
+          <li>For <strong>z < 0</strong>, σ(z) < 50%</li>
         </ul>
       </div>
     </div>
 
-    <!-- 4. Weights & Bias -->
     <div class="card">
       <div class="card-header"><h2>Weights & Bias</h2></div>
       <div class="card-body">
@@ -115,22 +111,21 @@
       </div>
     </div>
 
-    <!-- 5. Example: Hotel Cancellation -->
     <div class="card" style="grid-column: 1 / span 2;">
       <div class="card-header"><h2>Example: Hotel Cancellation</h2></div>
       <div class="card-body">
         <p><strong>Goal:</strong> Predict the chance a booking will cancel based on booking details.</p>
         <p><strong>Input:</strong></p>
         <ul style="margin-left: 16px; margin-top: 8px;">
-          <li>Lead time: 30 days advance booking</li>
-          <li>Special requests: 1</li>
-          <li>Price per night: $100</li>
+          <li>Lead time: 30 days</li>
+          <li>No. of special requests: 1</li>
+          <li>Average price per room: $100</li>
         </ul>
         <table>
           <tr><th>Feature</th><th>Value</th><th>Weight</th><th>Effect</th></tr>
-          <tr><td>Days in advance</td><td>30</td><td>+0.04</td><td class="contribution-positive">+1.20</td></tr>
-          <tr><td>Special requests</td><td>1</td><td>[1 × (−0.5)]</td><td class="contribution-negative">−0.50</td></tr>
-          <tr><td>Price per night</td><td>$100</td><td>+0.01</td><td class="contribution-positive">+1.00</td></tr>
+          <tr><td>Lead time</td><td>30</td><td>+0.04</td><td class="contribution-positive">+1.20</td></tr>
+          <tr><td>No. of special requests</td><td>1</td><td>−0.50</td><td class="contribution-negative">−0.50</td></tr>
+          <tr><td>Average price per room</td><td>$100</td><td>+0.01</td><td class="contribution-positive">+1.00</td></tr>
           <tr><td>Bias (intercept)</td><td>—</td><td>−0.90</td><td class="contribution-negative">−0.90</td></tr>
         </table>
         <p style="margin-top: 12px;"><strong>1. Calculate z:</strong> +1.20 − 0.50 + 1.00 − 0.90 = +0.80</p>
@@ -139,7 +134,6 @@
       </div>
     </div>
 
-    <!-- 6. Why This Matters -->
     <div class="card" style="grid-column: 1 / span 2;">
       <div class="card-header"><h2>5. Why This Matters</h2></div>
       <div class="card-body">
