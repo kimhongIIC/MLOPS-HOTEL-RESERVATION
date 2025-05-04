@@ -13,6 +13,7 @@ app = Flask(__name__)
 loaded_model = joblib.load(MODEL_OUTPUT_PATH)
 
 @app.route("/", methods=["GET", "POST"])
+
 def index():
     if request.method == "POST":
     
@@ -41,6 +42,10 @@ def index():
         )
 
     return render_template("index.html")
+
+@app.route("/logistic_regression")
+def logistic_regression():
+    return render_template("logistic_regression.html")
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))

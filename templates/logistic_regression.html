@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Logistic Regression Breakdown</title>
+  <style>
+    :root {
+      --primary-color: #2563eb;
+      --accent-color: #0ea5e9;
+      --danger-color: #ef4444;
+      --success-color: #10b981;
+      --bg-light: #f8fafc;
+      --bg-white: #ffffff;
+      --text-color: #1e293b;
+      --border-color: #e2e8f0;
+      --border-radius: 8px;
+      --box-shadow: 0 4px 6px rgba(0,0,0,0.1),0 2px 4px rgba(0,0,0,0.1);
+      --spacing-md: 16px;
+      --spacing-lg: 24px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg-light); color: var(--text-color); font-family: 'Inter', sans-serif; padding: var(--spacing-lg); }
+    .page-header { text-align: center; margin-bottom: var(--spacing-lg); }
+    .page-header h1 { color: var(--primary-color); font-size: 2rem; margin-bottom: 8px; }
+    .header-divider { height: 4px; width: 60px; background: var(--primary-color); margin: 8px auto var(--spacing-lg); border-radius: 2px; }
+    .container { display: grid; grid-template-columns: 1fr; gap: var(--spacing-lg); max-width: 1000px; margin: 0 auto; }
+    @media (min-width: 900px) { .container { grid-template-columns: 1fr 1fr; } }
+    .card { background: var(--bg-white); border-radius: var(--border-radius); box-shadow: var(--box-shadow); overflow: hidden; }
+    .card-header { background: var(--primary-color); color: white; padding: var(--spacing-md); }
+    .card-header h2 { font-size: 1.25rem; margin: 0; }
+    .card-body { padding: var(--spacing-md); font-size: 0.95rem; }
+    .btn-light { display: inline-block; margin-bottom: var(--spacing-lg); padding: 8px 16px; border-radius: var(--border-radius); text-decoration: none; color: var(--primary-color); border: 1px solid var(--primary-color); transition: 0.3s; font-size: 0.9rem; }
+    .btn-light:hover { background: var(--primary-color); color: white; }
+    table { width: 100%; border-collapse: collapse; margin-top: var(--spacing-md); }
+    th, td { padding: 8px; border: 1px solid var(--border-color); text-align: left; }
+    th { background: var(--bg-light); }
+    .formula { background: #f0f7ff; padding: 12px; border-left: 4px solid var(--primary-color); margin: var(--spacing-md) 0; font-style: italic; }
+    .step { display: flex; align-items: flex-start; margin-top: var(--spacing-md); }
+    .step-number { background: var(--primary-color); color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; margin-right: 8px; font-size: 0.9rem; }
+    .step-content { flex: 1; }
+    .contribution-positive { color: var(--success-color); }
+    .contribution-negative { color: var(--danger-color); }
+    .axis-label { font-size: 0.9rem; color: var(--text-color); text-align: center; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <div class="page-header">
+    <h1>How Logistic Regression Works</h1>
+    <div class="header-divider"></div>
+    <p>Visualize how feature inputs (e.g., lead time, requests, price) map to cancellation probability.</p>
+  </div>
+  <a href="{{ url_for('index') }}" class="btn-light">&larr; Back</a>
+  <div class="container">
+    <!-- 1. What Is Logistic Regression? -->
+    <div class="card">
+      <div class="card-header"><h2>1. What Is Logistic Regression?</h2></div>
+      <div class="card-body">
+        <p>Logistic regression predicts yes/no outcomes (e.g., will a booking cancel?) based on multiple factors.</p>
+        <h3 style="margin-top: 16px; color: var(--primary-color);">How It Works:</h3>
+        <div class="step"><div class="step-number">1</div><div class="step-content"><strong>Collect</strong> information (features)</div></div>
+        <div class="step"><div class="step-number">2</div><div class="step-content"><strong>Multiply</strong> each by its weight</div></div>
+        <div class="step"><div class="step-number">3</div><div class="step-content"><strong>Add</strong> everything plus bias</div></div>
+        <div class="step"><div class="step-number">4</div><div class="step-content"><strong>Convert</strong> to percentage using sigmoid</div></div>
+        <div class="formula">Prediction = Sigmoid(Features × Weights + Bias)</div>
+      </div>
+    </div>
+
+    <!-- 2. Key Terms -->
+    <div class="card">
+      <div class="card-header"><h2>Key Terms</h2></div>
+      <div class="card-body">
+        <table>
+          <tr><th>Term</th><th>Meaning</th></tr>
+          <tr><td>Weight (w)</td><td>How much a feature contirbute to the score</td></tr>
+          <tr><td>Bias (b)</td><td>The baseline score before any features are added.</td></tr>
+          <tr><td>Raw score (z)</td><td>	The baseline plus all feature contributions.</td></tr>
+          <tr><td>Probability σ(z)</td><td>	That score converted into a percentage chance (0 – 100 %).</td></tr>
+          <tr><td>e</td><td>≈2.718</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- 3. Sigmoid Curve & Formula -->
+    <div class="card">
+      <div class="card-header"><h2>Sigmoid Curve & Formula</h2></div>
+      <div class="card-body">
+        <p>The sigmoid function converts the raw score <strong>z</strong> into a probability.</p>
+        <p style="text-align:center; font-size:1.1rem;"><strong>σ(z) = 1 / (1 + e<sup>−z</sup>)</strong></p>
+        <div style="margin: var(--spacing-md) 0;">
+  <div style="text-align: left; font-size:0.9rem; color:var(--text-color); margin-bottom:4px;">σ(z) (output probability)</div>
+  <img src="https://upload.wikimedia.org/wikipedia/commons/8/88/Logistic-curve.svg" alt="Sigmoid curve" style="max-width:100%; height:auto; display:block; margin: 0 auto;" />
+  <div style="text-align: right; font-size:0.9rem; color:var(--text-color); margin-top:4px;">z (input raw score)</div>
+</div>
+<ul style="font-size:0.95rem; margin-top:8px;">
+          <li>When <strong>z = 0</strong> (middle line), probability = 50%</li>
+          <li>For <strong>z &gt; 0</strong> (right), σ(z) &gt; 50%</li>
+          <li>For <strong>z &lt; 0</strong> (left), σ(z) &lt; 50%</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 4. Weights & Bias -->
+    <div class="card">
+      <div class="card-header"><h2>Weights & Bias</h2></div>
+      <div class="card-body">
+        <p><strong>Weights:</strong> How much each input matters</p>
+        <p><strong>Bias:</strong> Starting baseline before inputs</p>
+        <div class="formula">z = (Feature₁×Weight₁) + (Feature₂×Weight₂) + Bias</div>
+        <h3 style="margin-top: var(--spacing-md); color: var(--primary-color);">Training Steps:</h3>
+        <div class="step"><div class="step-number">1</div><div class="step-content">Set initial weights</div></div>
+        <div class="step"><div class="step-number">2</div><div class="step-content">Predict and check error</div></div>
+        <div class="step"><div class="step-number">3</div><div class="step-content">Adjust weights to reduce error</div></div>
+        <div class="step"><div class="step-number">4</div><div class="step-content">Repeat until accurate</div></div>
+      </div>
+    </div>
+
+    <!-- 5. Example: Hotel Cancellation -->
+    <div class="card" style="grid-column: 1 / span 2;">
+      <div class="card-header"><h2>Example: Hotel Cancellation</h2></div>
+      <div class="card-body">
+        <p><strong>Goal:</strong> Predict the chance a booking will cancel based on booking details.</p>
+        <p><strong>Input:</strong></p>
+        <ul style="margin-left: 16px; margin-top: 8px;">
+          <li>Lead time: 30 days advance booking</li>
+          <li>Special requests: 1</li>
+          <li>Price per night: $100</li>
+        </ul>
+        <table>
+          <tr><th>Feature</th><th>Value</th><th>Weight</th><th>Effect</th></tr>
+          <tr><td>Days in advance</td><td>30</td><td>+0.04</td><td class="contribution-positive">+1.20</td></tr>
+          <tr><td>Special requests</td><td>1</td><td>[1 × (−0.5)]</td><td class="contribution-negative">−0.50</td></tr>
+          <tr><td>Price per night</td><td>$100</td><td>+0.01</td><td class="contribution-positive">+1.00</td></tr>
+          <tr><td>Bias (intercept)</td><td>—</td><td>−0.90</td><td class="contribution-negative">−0.90</td></tr>
+        </table>
+        <p style="margin-top: 12px;"><strong>1. Calculate z:</strong> +1.20 − 0.50 + 1.00 − 0.90 = +0.80</p>
+        <p><strong>2. Apply sigmoid:</strong> σ(0.80) = 1 / (1 + e<sup>−0.80</sup>) ≈ 0.69</p>
+        <p><strong>3. Prediction:</strong>  69% chance of cancellation</p>
+      </div>
+    </div>
+
+    <!-- 6. Why This Matters -->
+    <div class="card" style="grid-column: 1 / span 2;">
+      <div class="card-header"><h2>5. Why This Matters</h2></div>
+      <div class="card-body">
+        <div style="display: flex; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 200px; padding-right: 15px;">
+            <h3 style="color: var(--primary-color); margin-bottom: 8px;">Key Insights:</h3>
+            <ul style="margin-left: 16px;">
+              <li>Early bookings increase cancellation risk (+1.20)</li>
+              <li>Special requests reduce cancellation risk (−0.50)</li>
+              <li>Higher prices increase cancellation risk (+1.00)</li>
+            </ul>
+          </div>
+          <div style="flex: 1; min-width: 200px;">
+            <h3 style="color: var(--primary-color); margin-bottom: 8px;">Business Actions:</h3>
+            <ul style="margin-left: 16px;">
+              <li>Discount early bookings with special requests</li>
+              <li>Send quick reminders for high-price stays</li>
+              <li>Limit cancellations on expensive bookings</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
