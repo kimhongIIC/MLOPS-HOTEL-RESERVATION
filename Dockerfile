@@ -20,14 +20,14 @@
 
 # CMD ["python", "application.py"]
 
-# ─── STAGE 1: Build & (Optional) Train ───────────────────────────────────────
+# ─── STAGE 1: Builder ───────────────────────────────────────
 FROM python:3.11-slim AS builder
 
-# Don’t generate .pyc files, don’t buffer stdout/stderr
+# avoid .pyc files, unbuffered stdout/stderr
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
-# Install any build-time deps (e.g. if your training pipeline needs gcc)
+# install build-time deps (for compiling or training)
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
        build-essential libgomp1 \
@@ -35,44 +35,46 @@ RUN apt-get update \
 
 WORKDIR /app
 
-# Copy and install Python dependencies
+# Install Python deps
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy all source (including your training pipeline)
+# Copy your entire repo
 COPY . .
 
-# (Optional) Train your model here; output goes to /app/artifacts/models/
+# Run your training pipeline (drops artifacts into artifacts/model/)
 RUN python pipeline/training_pipeline.py
 
 
-# ─── STAGE 2: Runtime ────────────────────────────────────────────────────────
+# ─── STAGE 2: Runtime ───────────────────────────────────────
 FROM python:3.11-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    # Cap Loky to avoid spurious warnings & runaway CPU use
     LOKY_MAX_CPU_COUNT=4
 
 WORKDIR /app
 
-# Install only runtime deps
+# Only runtime deps
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy your app code
-COPY application.py config/ templates/ static/ src/ /app/
+# Copy just what you need to serve:
+#  - your Flask app
+#  - config (with __init__.py)
+#  - templates & static assets
+#  - any helper code under src/
+COPY application.py config/ templates/ static/ src/ ./
 
-# Copy pre-trained model from builder (or, if you train offline, copy from local disk)
-COPY --from=builder /app/artifacts/models/ /app/artifacts/models/
+# Copy the trained model out of the builder stage
+COPY --from=builder /app/artifacts/model /app/artifacts/model
 
-# Create and switch to a non-root user
+# Run as non-root for security
 RUN useradd --create-home appuser \
   && chown -R appuser /app
 USER appuser
 
-# Expose the same port Cloud Run (and your Jenkins tests) will hit
 EXPOSE 8080
 
-# Use Gunicorn for production—4 workers is a reasonable default
+# Production WSGI server
 CMD ["gunicorn", "application:app", "-b", "0.0.0.0:8080", "-w", "4"]
